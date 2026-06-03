@@ -2,6 +2,7 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import os
+import plotly.express as px
 
 # Page Config
 st.set_page_config(
@@ -165,8 +166,12 @@ with tab1:
     
     if not anomalies_df.empty:
         st.subheader("Risk Breakdown by Account Class")
-        class_risk = anomalies_df.groupby("account_class")["risk_score"].mean()
-        st.bar_chart(class_risk)
+        class_risk = anomalies_df.groupby("account_class")["risk_score"].mean().reset_index()
+        fig_risk = px.bar(class_risk, x="risk_score", y="account_class", orientation='h', 
+                          color="risk_score", color_continuous_scale="Purples",
+                          title="Average Risk Score by Account Class")
+        fig_risk.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+        st.plotly_chart(fig_risk, use_container_width=True)
         
         st.subheader("Flagged Anomalies Pipeline")
         
@@ -178,7 +183,21 @@ with tab1:
                 anomalies_df['account_class'].str.contains(search, case=False, na=False)
             ]
             
-        st.dataframe(anomalies_df, use_container_width=True, hide_index=True)
+        # Format columns for display
+        display_df = anomalies_df.rename(columns={
+            "entry_id": "Entry ID",
+            "transaction_date": "Date",
+            "posted_by": "Posted By",
+            "amount": "Amount ($)",
+            "risk_score": "Risk Score",
+            "account_class": "Account Class",
+            "llm_determination": "AI Audit Status",
+            "llm_audit_summary": "Audit Summary"
+        })
+        display_df['Amount ($)'] = display_df['Amount ($)'].map('{:,.2f}'.format)
+        display_df['Risk Score'] = display_df['Risk Score'].map('{:.1f}%'.format)
+        
+        st.dataframe(display_df, use_container_width=True, hide_index=True)
     else:
         st.success("No anomalies detected. The ledger is clean.")
 
@@ -208,8 +227,13 @@ with tab2:
     
     if not reviews_df.empty:
         st.subheader("Scrape Volumes by Social Platform")
-        plat_counts = reviews_df['platform_name'].value_counts()
-        st.bar_chart(plat_counts)
+        plat_counts = reviews_df['platform_name'].value_counts().reset_index()
+        plat_counts.columns = ['Platform', 'Count']
+        fig_plat = px.pie(plat_counts, values='Count', names='Platform', hole=0.4, 
+                          color_discrete_sequence=px.colors.sequential.Purples_r,
+                          title="Reviews by Platform")
+        fig_plat.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+        st.plotly_chart(fig_plat, use_container_width=True)
         
         st.subheader("Brand Feedback Logs")
         
@@ -220,7 +244,18 @@ with tab2:
                 reviews_df['author_handle'].str.contains(search_rev, case=False, na=False)
             ]
             
-        st.dataframe(reviews_df, use_container_width=True, hide_index=True)
+        display_rev = reviews_df.rename(columns={
+            "comment_id": "Comment ID",
+            "raw_text": "Review Text",
+            "sentiment_label": "Sentiment",
+            "confidence_score": "Confidence",
+            "post_timestamp": "Timestamp",
+            "platform_name": "Platform",
+            "author_handle": "User Handle"
+        })
+        display_rev['Confidence'] = (display_rev['Confidence'] * 100).map('{:.1f}%'.format)
+        
+        st.dataframe(display_rev, use_container_width=True, hide_index=True)
     else:
         st.info("No reviews tracked yet.")
 
@@ -249,11 +284,16 @@ with tab3:
     prices_df = pd.read_sql_query(query, conn)
     
     if not prices_df.empty:
-        st.subheader("Drip Pricing Incidents by Merchant (Violations)")
+        st.subheader("Drip Pricing Incidents by Merchant")
         violations_only = prices_df[prices_df['is_violation'] == 1]
         if not violations_only.empty:
-            merch_violations = violations_only['retailer_name'].value_counts()
-            st.bar_chart(merch_violations)
+            merch_violations = violations_only['retailer_name'].value_counts().reset_index()
+            merch_violations.columns = ['Retailer', 'Violations']
+            fig_merch = px.pie(merch_violations, values='Violations', names='Retailer', hole=0.4,
+                               color_discrete_sequence=px.colors.sequential.Sunset,
+                               title="Violations by Retailer")
+            fig_merch.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+            st.plotly_chart(fig_merch, use_container_width=True)
         else:
             st.success("No pricing violations detected.")
             
@@ -266,7 +306,22 @@ with tab3:
                 prices_df['retailer_name'].str.contains(search_price, case=False, na=False)
             ]
             
-        st.dataframe(prices_df, use_container_width=True, hide_index=True)
+        display_prices = prices_df.rename(columns={
+            "product_sku": "SKU",
+            "product_name": "Product Name",
+            "cart_price": "Cart Price ($)",
+            "checkout_price": "Checkout Price ($)",
+            "price_inflation_pct": "Inflation (%)",
+            "is_violation": "Violation?",
+            "timestamp": "Timestamp",
+            "retailer_name": "Retailer"
+        })
+        display_prices['Cart Price ($)'] = display_prices['Cart Price ($)'].map('{:,.2f}'.format)
+        display_prices['Checkout Price ($)'] = display_prices['Checkout Price ($)'].map('{:,.2f}'.format)
+        display_prices['Inflation (%)'] = display_prices['Inflation (%)'].map('{:.1f}%'.format)
+        display_prices['Violation?'] = display_prices['Violation?'].apply(lambda x: '🚨 Yes' if x == 1 else '✅ No')
+        
+        st.dataframe(display_prices, use_container_width=True, hide_index=True)
     else:
         st.info("No competitor pricing data available.")
 

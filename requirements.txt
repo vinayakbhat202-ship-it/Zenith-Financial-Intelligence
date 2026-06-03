@@ -5,4 +5,5 @@ chromadb
 crewai
 langchain-openai
 streamlit
+plotly
 
