@@ -121,9 +121,6 @@ flagged_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_journal_entries W
 flagged_anomalies = flagged_df['c'][0]
 unresolved = max(0, flagged_anomalies - total_audits)
 
-reviews_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_brand_reviews", conn)
-total_reviews = reviews_df['c'][0]
-
 market_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_retail_prices", conn)
 total_checks = market_df['c'][0]
 
@@ -138,7 +135,7 @@ st.sidebar.markdown(f"- **AI Audits Logged:** {total_audits:,}")
 st.sidebar.markdown(f"- **Unresolved Anomalies:** {unresolved:,}")
 
 # Main Layout: Tabs
-tab1, tab2, tab3 = st.tabs(["📈 Forensic Ledger", "💬 Brand Sentiment", "⚖️ Market Compliance"])
+tab1, tab2 = st.tabs(["📈 Forensic Ledger", "⚖️ Market Compliance"])
 
 # ----------------- TAB 1: FORENSIC LEDGER -----------------
 with tab1:
@@ -201,66 +198,8 @@ with tab1:
     else:
         st.success("No anomalies detected. The ledger is clean.")
 
-# ----------------- TAB 2: BRAND SENTIMENT -----------------
+# ----------------- TAB 2: MARKET COMPLIANCE -----------------
 with tab2:
-    st.header("Brand Sentiment Control Center")
-    st.caption("Real-time English & Hinglish customer feedback sentiment analytics")
-    
-    query = """
-        SELECT fbr.comment_id, fbr.raw_text, fbr.sentiment_label, fbr.confidence_score, fbr.post_timestamp,
-               dsc.platform_name, dsc.author_handle
-        FROM fact_brand_reviews fbr
-        JOIN dim_sentiment_channels dsc ON fbr.channel_key = dsc.channel_key
-        ORDER BY fbr.post_timestamp DESC
-    """
-    reviews_df = pd.read_sql_query(query, conn)
-    
-    pos_count = len(reviews_df[reviews_df['sentiment_label'] == 'positive']) if not reviews_df.empty else 0
-    neg_count = len(reviews_df[reviews_df['sentiment_label'] == 'negative']) if not reviews_df.empty else 0
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("TOTAL REVIEWS", f"{total_reviews:,}", "Social Scrape Sync")
-    col2.metric("POSITIVE REVIEWS", f"{pos_count:,}", "Customer Satisfaction")
-    col3.metric("NEGATIVE REVIEWS", f"{neg_count:,}", "Alerts Escalated", delta_color="inverse")
-    
-    st.markdown("---")
-    
-    if not reviews_df.empty:
-        st.subheader("Scrape Volumes by Social Platform")
-        plat_counts = reviews_df['platform_name'].value_counts().reset_index()
-        plat_counts.columns = ['Platform', 'Count']
-        fig_plat = px.pie(plat_counts, values='Count', names='Platform', hole=0.4, 
-                          color_discrete_sequence=px.colors.sequential.Purples_r,
-                          title="Reviews by Platform")
-        fig_plat.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
-        st.plotly_chart(fig_plat, use_container_width=True)
-        
-        st.subheader("Brand Feedback Logs")
-        
-        search_rev = st.text_input("Search Reviews...", key="search_reviews")
-        if search_rev:
-            reviews_df = reviews_df[
-                reviews_df['raw_text'].str.contains(search_rev, case=False, na=False) |
-                reviews_df['author_handle'].str.contains(search_rev, case=False, na=False)
-            ]
-            
-        display_rev = reviews_df.rename(columns={
-            "comment_id": "Comment ID",
-            "raw_text": "Review Text",
-            "sentiment_label": "Sentiment",
-            "confidence_score": "Confidence",
-            "post_timestamp": "Timestamp",
-            "platform_name": "Platform",
-            "author_handle": "User Handle"
-        })
-        display_rev['Confidence'] = (display_rev['Confidence'] * 100).map('{:.1f}%'.format)
-        
-        st.dataframe(display_rev, use_container_width=True, hide_index=True)
-    else:
-        st.info("No reviews tracked yet.")
-
-# ----------------- TAB 3: MARKET COMPLIANCE -----------------
-with tab3:
     st.header("Market Compliance & Pricing Monitor")
     st.caption("Scraped competitor pricing logs tracking dynamic markup violations")
     

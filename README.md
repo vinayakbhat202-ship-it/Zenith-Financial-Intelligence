@@ -11,7 +11,7 @@ pinned: false
 
 **Zenith** is a smart digital dashboard that acts as an automated, AI-powered corporate watchdog. In large companies, human auditors can only manually check about 5% of financial transactions for fraud or rule-breaking. Zenith automates this, checking 100% of transactions in real-time. 
 
-Additionally, it tracks what customers are saying about your brand online (in English and Hinglish) and catches competitors who are secretly inflating prices at checkout (drip pricing).
+Additionally, it catches competitors who are secretly inflating prices at checkout (drip pricing).
 
 ## 🛠️ Tech Stack Used
 
