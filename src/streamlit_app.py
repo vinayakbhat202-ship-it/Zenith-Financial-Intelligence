@@ -11,11 +11,89 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for a slightly cleaner look (but minimal, keeping it pure python)
+# Advanced Custom CSS for a Premium Dark Aesthetic (similar to previous UI)
 st.markdown("""
 <style>
-    .reportview-container {
-        background: #0e1117;
+    /* Main Background Gradient */
+    .stApp {
+        background: linear-gradient(135deg, #090916 0%, #15112e 100%);
+        color: #e2e8f0;
+    }
+    
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: rgba(13, 11, 33, 0.7);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Headers */
+    h1, h2, h3 {
+        color: #c7d2fe !important;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Metric Cards */
+    [data-testid="metric-container"] {
+        background: rgba(20, 20, 40, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Metric Value */
+    [data-testid="stMetricValue"] {
+        color: #818cf8 !important;
+        font-weight: 700;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: rgba(255,255,255,0.05);
+        border-radius: 10px 10px 0px 0px;
+        color: #a5b4fc;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%);
+        border-bottom: 2px solid #6366f1;
+        color: #ffffff;
+    }
+    
+    /* Inputs / Buttons */
+    .stTextInput input {
+        background-color: rgba(0,0,0,0.3) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+        border-radius: 8px !important;
+        color: white !important;
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        color: white;
+    }
+    
+    /* Dataframe background */
+    [data-testid="stDataFrame"] {
+        background-color: rgba(255,255,255,0.02);
+        border-radius: 10px;
+        padding: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
