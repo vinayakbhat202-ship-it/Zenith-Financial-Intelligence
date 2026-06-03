@@ -9,9 +9,7 @@ pinned: false
 
 # Zenith — Enterprise Intelligence Command Center
 
-**Zenith** is a smart digital dashboard that acts as an automated, AI-powered corporate watchdog. In large companies, human auditors can only manually check about 5% of financial transactions for fraud or rule-breaking. Zenith automates this, checking 100% of transactions in real-time. 
-
-Additionally, it catches competitors who are secretly inflating prices at checkout (drip pricing).
+**Zenith** is a smart digital dashboard that acts as an automated, AI-powered corporate watchdog. In large companies, human auditors can only manually check about 5% of financial transactions for fraud or rule-breaking. Zenith automates this, checking 100% of transactions in real-time.
 
 ## 🛠️ Tech Stack Used
 

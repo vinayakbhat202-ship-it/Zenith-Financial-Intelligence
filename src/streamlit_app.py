@@ -121,12 +121,6 @@ flagged_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_journal_entries W
 flagged_anomalies = flagged_df['c'][0]
 unresolved = max(0, flagged_anomalies - total_audits)
 
-market_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_retail_prices", conn)
-total_checks = market_df['c'][0]
-
-violations_df = pd.read_sql_query("SELECT COUNT(*) as c FROM fact_retail_prices WHERE is_violation = 1", conn)
-total_violations = violations_df['c'][0]
-
 st.sidebar.markdown(f"**Platform Status:** Active 🟢")
 st.sidebar.markdown("---")
 st.sidebar.markdown("### System Health")
@@ -134,134 +128,83 @@ st.sidebar.markdown(f"- **Journal Lines Processed:** {total_entries:,}")
 st.sidebar.markdown(f"- **AI Audits Logged:** {total_audits:,}")
 st.sidebar.markdown(f"- **Unresolved Anomalies:** {unresolved:,}")
 
-# Main Layout: Tabs
-tab1, tab2 = st.tabs(["📈 Forensic Ledger", "⚖️ Market Compliance"])
+# Main Layout: Single Page (No Tabs)
+st.header("Forensic Audit Dashboard")
+st.caption("AI-driven general ledger anomaly detection & RAG compliance verification")
 
-# ----------------- TAB 1: FORENSIC LEDGER -----------------
-with tab1:
-    st.header("Forensic Audit Dashboard")
-    st.caption("AI-driven general ledger anomaly detection & RAG compliance verification")
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("TOTAL LEDGER LINES", f"{total_entries:,}", "Ingestion Active")
-    col2.metric("FLAGGED ANOMALIES", f"{flagged_anomalies:,}", "Risk > 70%", delta_color="inverse")
-    col3.metric("AI AUDITS LOGGED", f"{total_audits:,}", "Verified by RAG")
+col1, col2, col3 = st.columns(3)
+col1.metric("TOTAL LEDGER LINES", f"{total_entries:,}", "Ingestion Active")
+col2.metric("FLAGGED ANOMALIES", f"{flagged_anomalies:,}", "Risk > 70%", delta_color="inverse")
+col3.metric("AI AUDITS LOGGED", f"{total_audits:,}", "Verified by RAG")
 
-    st.markdown("---")
-    
-    query = """
-        SELECT fje.entry_id, fje.transaction_date, fje.posted_by, 
-               (fje.debit_amount + fje.credit_amount) AS amount, fje.risk_score,
-               da.account_class, fal.llm_determination, fal.llm_audit_summary
-        FROM fact_journal_entries fje
-        JOIN dim_accounts da ON fje.account_key = da.account_key
-        LEFT JOIN fact_audit_log fal ON fje.entry_id = fal.entry_id
-        WHERE fje.risk_score > 70.0
-        ORDER BY fje.risk_score DESC
-    """
-    anomalies_df = pd.read_sql_query(query, conn)
-    
-    if not anomalies_df.empty:
-        st.subheader("Risk Breakdown by Account Class")
-        class_risk = anomalies_df.groupby("account_class")["risk_score"].mean().reset_index()
-        fig_risk = px.bar(class_risk, x="risk_score", y="account_class", orientation='h', 
-                          color="risk_score", color_continuous_scale="Purples",
-                          title="Average Risk Score by Account Class")
-        fig_risk.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
-        st.plotly_chart(fig_risk, use_container_width=True)
-        
-        st.subheader("Flagged Anomalies Pipeline")
-        
-        search = st.text_input("Search Ledger (Entry ID, Posted By, Account Class)...", key="search_ledger")
-        if search:
-            anomalies_df = anomalies_df[
-                anomalies_df['entry_id'].str.contains(search, case=False, na=False) |
-                anomalies_df['posted_by'].str.contains(search, case=False, na=False) |
-                anomalies_df['account_class'].str.contains(search, case=False, na=False)
-            ]
-            
-        # Format columns for display
-        display_df = anomalies_df.rename(columns={
-            "entry_id": "Entry ID",
-            "transaction_date": "Date",
-            "posted_by": "Posted By",
-            "amount": "Amount ($)",
-            "risk_score": "Risk Score",
-            "account_class": "Account Class",
-            "llm_determination": "AI Audit Status",
-            "llm_audit_summary": "Audit Summary"
-        })
-        display_df['Amount ($)'] = display_df['Amount ($)'].map('{:,.2f}'.format)
-        display_df['Risk Score'] = display_df['Risk Score'].map('{:.1f}%'.format)
-        
-        st.dataframe(display_df, use_container_width=True, hide_index=True)
-    else:
-        st.success("No anomalies detected. The ledger is clean.")
+st.markdown("---")
 
-# ----------------- TAB 2: MARKET COMPLIANCE -----------------
-with tab2:
-    st.header("Market Compliance & Pricing Monitor")
-    st.caption("Scraped competitor pricing logs tracking dynamic markup violations")
-    
-    ratio = (total_violations / total_checks * 100) if total_checks > 0 else 0
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("TOTAL COMPETITOR CHECKS", f"{total_checks:,}", "Hourly Scraper")
-    col2.metric("DECEPTIVE PRICING", f"{total_violations:,}", "Drip Pricing", delta_color="inverse")
-    col3.metric("VIOLATION RATIO", f"{ratio:.1f}%", "Target < 5%")
+query = """
+    SELECT fje.entry_id, fje.transaction_date, fje.posted_by, 
+           (fje.debit_amount + fje.credit_amount) AS amount, fje.risk_score,
+           da.account_class, fal.llm_determination, fal.llm_audit_summary
+    FROM fact_journal_entries fje
+    JOIN dim_accounts da ON fje.account_key = da.account_key
+    LEFT JOIN fact_audit_log fal ON fje.entry_id = fal.entry_id
+    WHERE fje.risk_score > 70.0
+    ORDER BY fje.risk_score DESC
+"""
+anomalies_df = pd.read_sql_query(query, conn)
 
-    st.markdown("---")
+if not anomalies_df.empty:
+    st.subheader("Risk Breakdown by Account Class")
+    class_risk = anomalies_df.groupby("account_class")["risk_score"].mean().reset_index()
+    fig_risk = px.bar(class_risk, x="risk_score", y="account_class", orientation='h', 
+                      color="risk_score", color_continuous_scale="Purples",
+                      title="Average Risk Score by Account Class")
+    fig_risk.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+    st.plotly_chart(fig_risk, use_container_width=True)
     
-    query = """
-        SELECT frp.product_sku, frp.product_name, frp.cart_price, frp.checkout_price,
-               frp.price_inflation_pct, frp.is_violation, frp.timestamp,
-               dcr.retailer_name
-        FROM fact_retail_prices frp
-        JOIN dim_competitor_retailers dcr ON frp.retailer_key = dcr.retailer_key
-        ORDER BY frp.timestamp DESC
-    """
-    prices_df = pd.read_sql_query(query, conn)
+    st.subheader("Flagged Anomalies Pipeline")
     
-    if not prices_df.empty:
-        st.subheader("Drip Pricing Incidents by Merchant")
-        violations_only = prices_df[prices_df['is_violation'] == 1]
-        if not violations_only.empty:
-            merch_violations = violations_only['retailer_name'].value_counts().reset_index()
-            merch_violations.columns = ['Retailer', 'Violations']
-            fig_merch = px.pie(merch_violations, values='Violations', names='Retailer', hole=0.4,
-                               color_discrete_sequence=px.colors.sequential.Sunset,
-                               title="Violations by Retailer")
-            fig_merch.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="white")
-            st.plotly_chart(fig_merch, use_container_width=True)
-        else:
-            st.success("No pricing violations detected.")
-            
-        st.subheader("Competitor Price Audit Feed")
+    search = st.text_input("Search Ledger (Entry ID, Posted By, Account Class)...", key="search_ledger")
+    if search:
+        anomalies_df = anomalies_df[
+            anomalies_df['entry_id'].str.contains(search, case=False, na=False) |
+            anomalies_df['posted_by'].str.contains(search, case=False, na=False) |
+            anomalies_df['account_class'].str.contains(search, case=False, na=False)
+        ]
         
-        search_price = st.text_input("Search Products/Retailers...", key="search_prices")
-        if search_price:
-            prices_df = prices_df[
-                prices_df['product_name'].str.contains(search_price, case=False, na=False) |
-                prices_df['retailer_name'].str.contains(search_price, case=False, na=False)
-            ]
-            
-        display_prices = prices_df.rename(columns={
-            "product_sku": "SKU",
-            "product_name": "Product Name",
-            "cart_price": "Cart Price ($)",
-            "checkout_price": "Checkout Price ($)",
-            "price_inflation_pct": "Inflation (%)",
-            "is_violation": "Violation?",
-            "timestamp": "Timestamp",
-            "retailer_name": "Retailer"
-        })
-        display_prices['Cart Price ($)'] = display_prices['Cart Price ($)'].map('{:,.2f}'.format)
-        display_prices['Checkout Price ($)'] = display_prices['Checkout Price ($)'].map('{:,.2f}'.format)
-        display_prices['Inflation (%)'] = display_prices['Inflation (%)'].map('{:.1f}%'.format)
-        display_prices['Violation?'] = display_prices['Violation?'].apply(lambda x: '🚨 Yes' if x == 1 else '✅ No')
-        
-        st.dataframe(display_prices, use_container_width=True, hide_index=True)
-    else:
-        st.info("No competitor pricing data available.")
+    # Format columns for display natively
+    display_df = anomalies_df.rename(columns={
+        "entry_id": "Entry ID",
+        "transaction_date": "Date",
+        "posted_by": "Posted By",
+        "amount": "Amount",
+        "risk_score": "Risk Score",
+        "account_class": "Account Class",
+        "llm_determination": "AI Status",
+        "llm_audit_summary": "Audit Summary"
+    })
+    
+    # Prettify 'Posted By'
+    display_df["Posted By"] = display_df["Posted By"].str.replace("usr_", "").str.title()
+    
+    # Format AI Status with emojis
+    def format_status(x):
+        if x == "AUDIT_REQUIRED": return "🚨 REQUIRED"
+        if x == "SUSPICIOUS": return "⚠️ SUSPICIOUS"
+        if pd.isna(x): return "⏳ PENDING"
+        return f"✅ {x}"
+    display_df["AI Status"] = display_df["AI Status"].apply(format_status)
+    
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Entry ID": st.column_config.TextColumn("Entry ID", width="small"),
+            "Amount": st.column_config.NumberColumn("Amount", format="$%.2f"),
+            "Risk Score": st.column_config.ProgressColumn("Risk Score", format="%.1f%%", min_value=0, max_value=100),
+            "Audit Summary": st.column_config.TextColumn("Audit Summary", width="large")
+        }
+    )
+else:
+    st.success("No anomalies detected. The ledger is clean.")
 
 conn.close()
