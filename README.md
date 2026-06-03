@@ -15,10 +15,10 @@ Additionally, it tracks what customers are saying about your brand online (in En
 
 ## 🛠️ Tech Stack Used
 
-*   **Backend & API:** Python, FastAPI, SQLite (Relational Database)
+*   **Frontend/Backend:** Pure Python via Streamlit
+*   **Database:** SQLite (Relational Database)
 *   **Machine Learning:** Scikit-Learn (Isolation Forest), Pandas, NumPy
 *   **Generative AI / RAG:** LangChain, OpenAI (GPT-4o-mini), ChromaDB (Vector Database)
-*   **Frontend:** Vanilla JS, HTML, Premium Glassmorphism CSS, Chart.js
 *   **Deployment:** Docker, Hugging Face Spaces, GitHub
 
 ## 🧠 How it Works (Under the Hood)

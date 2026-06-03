@@ -21,5 +21,4 @@ RUN python3 db/init_db.py && \
 # Switch to the non-root user
 USER user
 
-# Hugging Face Spaces defaults to port 7860
-CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["streamlit", "run", "src/streamlit_app.py", "--server.port", "7860", "--server.address", "0.0.0.0"]
