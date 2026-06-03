@@ -1,0 +1,15 @@
+entry_id,account_code,entity_code,user_id,transaction_date,debit_amount,credit_amount,is_manual_override,posted_by,approved_by
+frd_001,1010,IN-01,usr_amit,2026-06-03 15:00:00,24500.0,0.0,0,usr_amit,usr_amit
+frd_001,3020,IN-01,usr_amit,2026-06-03 15:00:00,0.0,24500.0,0,usr_amit,usr_amit
+frd_002,5040,US-01,usr_sarah,2026-06-03 03:15:00,9800.0,0.0,1,usr_sarah,usr_robert
+frd_002,1010,US-01,usr_sarah,2026-06-03 03:15:00,0.0,9800.0,1,usr_sarah,usr_robert
+frd_003,1050,US-01,usr_sarah,2026-06-03 23:30:00,8500.0,0.0,0,usr_sarah,usr_sarah
+frd_003,1010,US-01,usr_sarah,2026-06-03 23:30:00,0.0,8500.0,0,usr_sarah,usr_sarah
+frd_004,1100,UK-01,usr_john,2026-06-03 10:15:00,1200.0,0.0,0,usr_john,usr_robert
+frd_004,2010,UK-01,usr_john,2026-06-03 10:15:00,0.0,1200.0,0,usr_john,usr_robert
+frd_005,5040,IN-01,usr_amit,2026-06-03 11:30:00,95000.0,0.0,1,usr_amit,usr_priya
+frd_005,1010,IN-01,usr_amit,2026-06-03 11:30:00,0.0,95000.0,1,usr_amit,usr_priya
+frd_006,5050,US-01,usr_sarah,2026-06-03 14:00:00,320.0,0.0,0,usr_sarah,usr_robert
+frd_006,1010,US-01,usr_sarah,2026-06-03 14:00:00,0.0,320.0,0,usr_sarah,usr_robert
+frd_007,1010,UK-01,usr_john,2026-06-03 15:10:00,800.0,0.0,0,usr_john,usr_robert
+frd_007,4020,UK-01,usr_john,2026-06-03 15:10:00,0.0,800.0,0,usr_john,usr_robert

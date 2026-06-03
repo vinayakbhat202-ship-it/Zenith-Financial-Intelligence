@@ -1,0 +1,15 @@
+# Python virtual environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Local databases
+db/zenith.db
+
+# Generated CSV Exports
+exports/*.csv
+
+# IDE specific settings
+.vscode/
+.DS_Store

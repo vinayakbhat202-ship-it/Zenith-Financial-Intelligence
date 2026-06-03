@@ -1,0 +1,13 @@
+ZENITH CORP - COMPLIANCE AUDIT POLICY MANUAL
+
+RULE 101: SEPARATION OF DUTIES (SoD)
+All journal entries must be reviewed and approved by a different employee than the one who posted the entry. No user may post and approve their own transactions. In the event of a system manual override, the transaction must be escalated directly to the internal audit committee. Any transaction posted and approved by the same user is classified as a severe SoD violation and a high fraud risk.
+
+RULE 102: APPROVAL LIMITS & SPLIT TRANSACTIONS
+Any expense transaction equal to or exceeding $5,000 USD must be approved by a department manager or CFO. Splitting a single business invoice or transaction into multiple smaller journal entries below the threshold of $5,000 USD to bypass approval controls is strictly prohibited. Indicators of transaction splitting include multiple entries to the same ledger account, from the same entity, posted on the same day, with identical or near-identical amounts below $5,000.
+
+RULE 103: OFF-HOURS & WEEKEND POSTINGS
+No financial transactions should be posted to the general ledger between the hours of 10:00 PM and 6:00 AM local time, or on weekends (Saturday and Sunday), unless posted by an automated system account (usr_admin). Manual postings by standard finance users (clearance: Standard) during these off-hours represent operational risk and must be flagged for retrospective verification of supporting documentation (invoices, receipts).
+
+RULE 104: STOCK EQUITY TRANSACTIONS
+Transactions impacting equity accounts (class: Equity, code: 3010, 3020) representing Common Stock issuance or Retained Earnings adjustments require explicit board resolution approval. Standard accounting clerks are not permitted to book manual journals directly to Equity accounts. Such bookings must be audited for signed board declarations.

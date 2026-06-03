@@ -1,0 +1,17 @@
+entry_id,account_code,entity_code,user_id,transaction_date,debit_amount,credit_amount,is_manual_override,posted_by,approved_by
+imp_001,1010,IN-01,usr_amit,2026-06-03 14:00:00,10500.0,0.0,0,usr_amit,usr_priya
+imp_001,4010,IN-01,usr_amit,2026-06-03 14:00:00,0.0,10500.0,0,usr_amit,usr_priya
+imp_002,5050,US-01,usr_sarah,2026-06-03 23:45:00,3200.0,0.0,1,usr_sarah,usr_robert
+imp_002,1010,US-01,usr_sarah,2026-06-03 23:45:00,0.0,3200.0,1,usr_sarah,usr_robert
+imp_003,1010,IN-01,usr_amit,2026-06-03 15:30:00,15000.0,0.0,0,usr_amit,usr_amit
+imp_003,3020,IN-01,usr_amit,2026-06-03 15:30:00,0.0,15000.0,0,usr_amit,usr_amit
+imp_004,1100,UK-01,usr_john,2026-06-03 10:15:00,8500.0,0.0,0,usr_john,usr_robert
+imp_004,2010,UK-01,usr_john,2026-06-03 10:15:00,0.0,8500.0,0,usr_john,usr_robert
+imp_005,5020,US-01,usr_sarah,2026-06-03 11:00:00,4500.0,0.0,0,usr_sarah,usr_robert
+imp_005,1010,US-01,usr_sarah,2026-06-03 11:00:00,0.0,4500.0,0,usr_sarah,usr_robert
+imp_006,5040,IN-01,usr_amit,2026-06-03 12:30:00,52000.0,0.0,1,usr_amit,usr_priya
+imp_006,1010,IN-01,usr_amit,2026-06-03 12:30:00,0.0,52000.0,1,usr_amit,usr_priya
+imp_007,5030,UK-01,usr_john,2026-06-03 09:00:00,6000.0,0.0,0,usr_john,usr_robert
+imp_007,2020,UK-01,usr_john,2026-06-03 09:00:00,0.0,6000.0,0,usr_john,usr_robert
+imp_008,1050,US-01,usr_sarah,2026-06-03 01:15:00,7500.0,0.0,0,usr_sarah,usr_sarah
+imp_008,1010,US-01,usr_sarah,2026-06-03 01:15:00,0.0,7500.0,0,usr_sarah,usr_sarah
